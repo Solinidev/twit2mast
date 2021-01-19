@@ -81,7 +81,10 @@ def parse_and_toot(status):
 class streamListener(tweepy.StreamListener):
     def on_status(self, status):
         try:
-            parse_and_toot(status)
+            if status.id_str == user_id:
+                parse_and_toot(status)
+            else:
+                return True
         except:
             toot('exception occured', header, instance)
     # def on_error(self, status_code):
