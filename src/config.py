@@ -2,8 +2,8 @@ import os
 import json
 from collections import OrderedDict
 
-def check_and_make():
-    if os.path.isfile("config.json"):
+def check_and_make(path):
+    if os.path.isfile(path + "/config.json"):
         return
     else:
         consumer_key = input("Enter your Twitter API key(consumer key) : ").strip()
@@ -34,11 +34,13 @@ def check_and_make():
             "access_token" : mastodon_access
         }
 
-        with open('config.json', 'w', encoding="utf-8") as make_file:
+        with open(path + '/config.json', 'w', encoding="utf-8") as make_file:
             json.dump(data, make_file, ensure_ascii=False, indent="\t")
 
         return
 
 if __name__ == '__main__':
-    # path = os.path.dirname(os.path.abspath(__file__)) + '/'
-    check_and_make()
+    path = os.path.dirname(os.path.abspath(__file__))
+    parpath = os.path.join(path, os.pardir)
+
+    check_and_make(parpath)

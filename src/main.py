@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import config
@@ -91,9 +92,12 @@ class streamListener(tweepy.StreamListener):
     #     print(status_code)
 
 if __name__ == '__main__':
-    config.check_and_make()
+    path = os.path.dirname(os.path.abspath(__file__))
+    par = os.path.join(path, os.pardir)
 
-    with open('config.json', 'r') as f:
+    config.check_and_make(par)
+
+    with open(par + '/config.json', 'r') as f:
         data = json.load(f)
 
         consumer_key = data["twitter"]["api_keys"]["consumer_key"]
