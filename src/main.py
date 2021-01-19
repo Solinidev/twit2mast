@@ -62,7 +62,7 @@ def parse_and_toot(status):
                 if linkNum == -1:
                     toot(stat2, header, instance)
                 else:
-                    stat3 = stat2[:linkNum+1]  ###
+                    stat3 = stat2[:linkNum]  ###
                     toot(stat3, header, instance)
             except:
                 toot(stat2, header, instance)
