@@ -82,7 +82,9 @@ def parse_and_toot(status):
 class streamListener(tweepy.StreamListener):
     def on_status(self, status):
         try:
-            if status.id_str == user_id:
+            stat = status._json
+            userID = stat['user']['id_str']
+            if user_id == userID:
                 parse_and_toot(status)
             else:
                 return True
