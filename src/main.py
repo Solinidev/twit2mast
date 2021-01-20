@@ -27,6 +27,15 @@ def RTcheck(status):
     else:
         return False
 
+def replyCheck(status, userid):
+    reply = status['in_reply_to_user_id_str']
+    if reply == userid:
+        return False
+    elif reply is None:
+        return False
+    else:
+        return True
+
 # def findLink(status):
 #     link = status.find('http')
 #     if link == 0 or link == 1:
@@ -39,7 +48,7 @@ def findColon(status):
     index = status.text.find(':')
     return index
 
-def parse_and_toot(status):
+def parse_and_toot(status, userid):
     stat = status._json
     if stat['is_quote_status'] is True:
         if RTcheck(stat):
@@ -51,6 +60,8 @@ def parse_and_toot(status):
         else:
             stat2 = status.text + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
             toot(stat2, header, instance)
+    elif replyCheck(stat, userid):
+        return True
     else:
         if RTcheck(stat):
             enter = findColon(status)
@@ -84,7 +95,7 @@ class streamListener(tweepy.StreamListener):
             stat = status._json
             userID = stat['user']['id_str']
             if user_id == userID:
-                parse_and_toot(status)
+                parse_and_toot(status, userID)
             else:
                 return True
         except:
