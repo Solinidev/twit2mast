@@ -26,15 +26,14 @@ def RTcheck(status):
         return True
     else:
         return False
-        # raise KeyError
 
-def findLink(status):
-    link = status.find('http')
-    if link == 0 or link == 1:
-        return -1
-    elif link >= 2:
-        linkIndex = status.rfind('https:')
-        return linkIndex
+# def findLink(status):
+#     link = status.find('http')
+#     if link == 0 or link == 1:
+#         return -1
+#     elif link >= 2:
+#         linkIndex = status.rfind('https:')
+#         return linkIndex
 
 def findColon(status):
     index = status.text.find(':')
@@ -45,39 +44,39 @@ def parse_and_toot(status):
     if stat['is_quote_status'] is True:
         if RTcheck(stat):
             enter = findColon(status)
-            linkNum = findLink(status.text)
-            stat2 = status.text[:enter+1] + '\n' + status.text[enter+2:linkNum] + '\n--\n' +'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
-            # stat2 = status.text + '\n--\n' + 'QUOTE @' + stat['retweeted_status']['quoted_status']['user']['screen_name'] + ':\n' + stat['retweeted_status']['quoted_status']['text']
+            # linkNum = findLink(status.text)
+            # stat2 = status.text[:enter+1] + '\n' + status.text[enter+2:linkNum] + '\n--\n' +'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
+            stat2 = status.text[:enter+1] + '\n' + status.text[enter+2:] + '\n--\n' +'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
             toot(stat2, header, instance)
         else:
-            # enter = findColon(status)
-            # stat2 = status.text[:enter+1] + '\n' + status.text[enter+2:] + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
             stat2 = status.text + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
             toot(stat2, header, instance)
     else:
         if RTcheck(stat):
             enter = findColon(status)
             stat2 = status.text[0:enter+1] + '\n' + status.text[enter+2:]
-            linkNum = findLink(stat2)
-            try:
-                if linkNum == -1:
-                    toot(stat2, header, instance)
-                else:
-                    stat3 = stat2[:linkNum]  ###
-                    toot(stat3, header, instance)
-            except:
-                toot(stat2, header, instance)
+            toot(stat2, header, instance)
+            # linkNum = findLink(stat2)
+            # try:
+            #     if linkNum == -1:
+            #         toot(stat2, header, instance)
+            #     else:
+            #         stat3 = stat2[:linkNum]  ###
+            #         toot(stat3, header, instance)
+            # except:
+            #     toot(stat2, header, instance)
         else:
             stat2 = status.text
-            linkNum = findLink(stat2)
-            try:
-                if linkNum == -1:
-                    toot(stat2, header, instance)
-                else:
-                    stat3 = stat2[:linkNum+1]  ###
-                    toot(stat3, header, instance)
-            except:
-                toot(stat2, header, instance)
+            toot(stat2, header, instance)
+            # linkNum = findLink(stat2)
+            # try:
+            #     if linkNum == -1:
+            #         toot(stat2, header, instance)
+            #     else:
+            #         stat3 = stat2[:linkNum]  ###
+            #         toot(stat3, header, instance)
+            # except:
+            #     toot(stat2, header, instance)
 
 class streamListener(tweepy.StreamListener):
     def on_status(self, status):
