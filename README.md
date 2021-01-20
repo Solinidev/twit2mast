@@ -11,3 +11,4 @@
 - 툿 발송 개선
 - on_error method
 - extended text 뭐어쩌구
+- findLink() 개선
