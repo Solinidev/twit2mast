@@ -15,10 +15,23 @@ def setHeader(token):
     header = {'Authorization' : 'Bearer ' + token}
     return header
 
+def upload_media(link, header, instance):
+    media = requests.get(link).content
+    files = {'file' : media}
+    r = requests.post(instance + '/api/v1/media', headers = header, files = files)
+    return r.json()['id']
+
 def toot(status, header, instance):
     t_data = dict()
     t_data['status'] = status
     t_data['visibility'] = 'unlisted'
+    requests.post(instance + '/api/v1/statuses', headers = header, data = t_data)
+
+def toot_with_media(status, header, instance, media):
+    t_data = dict()
+    t_data['status'] = status
+    t_data['visibility'] = 'unlisted'
+    t_data['media_ids[]'] = media
     requests.post(instance + '/api/v1/statuses', headers = header, data = t_data)
 
 def RTcheck(status):
@@ -36,58 +49,55 @@ def replyCheck(status, userid):
     else:
         return True
 
-# def findLink(status):
-#     link = status.find('http')
-#     if link == 0 or link == 1:
-#         return -1
-#     elif link >= 2:
-#         linkIndex = status.rfind('https:')
-#         return linkIndex
-
 def findColon(status):
     index = status.text.find(':')
     return index
 
+def mediaCheck(status):
+    if 'extended_entities' in status:
+        return True
+    else:
+        return False
+
+def getLinks(status):
+    media = status['extended_entities']['media']
+    linkList = []
+    for link in media:
+        linkList.append(link['media_url_https'])
+    return linkList
+
+def make_status(stat, stat2):
+    if mediaCheck(stat):
+        links = getLinks(stat)
+        mediaIds = []
+        for link in links:
+            mediaId = upload_media(link, header, instance)
+            mediaIds.append(mediaId)
+        toot_with_media(stat2, header, instance, mediaIds)
+    else:
+        toot(stat2, header, instance)
+
 def parse_and_toot(status, userid):
     stat = status._json
+    # print(stat)
     if stat['is_quote_status'] is True:
         if RTcheck(stat):
             enter = findColon(status)
-            # linkNum = findLink(status.text)
-            # stat2 = status.text[:enter+1] + '\n' + status.text[enter+2:linkNum] + '\n--\n' +'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
             stat2 = status.text[:enter+1] + '\n' + status.text[enter+2:] + '\n--\n' +'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
-            toot(stat2, header, instance)
+            make_status(stat, stat2)
         else:
             stat2 = status.text + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
-            toot(stat2, header, instance)
+            make_status(stat, stat2)
     elif replyCheck(stat, userid):
         return True
     else:
         if RTcheck(stat):
             enter = findColon(status)
             stat2 = status.text[0:enter+1] + '\n' + status.text[enter+2:]
-            toot(stat2, header, instance)
-            # linkNum = findLink(stat2)
-            # try:
-            #     if linkNum == -1:
-            #         toot(stat2, header, instance)
-            #     else:
-            #         stat3 = stat2[:linkNum]  ###
-            #         toot(stat3, header, instance)
-            # except:
-            #     toot(stat2, header, instance)
+            make_status(stat, stat2)
         else:
             stat2 = status.text
-            toot(stat2, header, instance)
-            # linkNum = findLink(stat2)
-            # try:
-            #     if linkNum == -1:
-            #         toot(stat2, header, instance)
-            #     else:
-            #         stat3 = stat2[:linkNum]  ###
-            #         toot(stat3, header, instance)
-            # except:
-            #     toot(stat2, header, instance)
+            make_status(stat, stat2)
 
 class streamListener(tweepy.StreamListener):
     def on_status(self, status):
