@@ -59,11 +59,19 @@ def mediaCheck(status):
     else:
         return False
 
+def media_type(media):
+    mtype = media['type']
+    return mtype
+
 def getLinks(status):
     media = status['extended_entities']['media']
     linkList = []
     for link in media:
-        linkList.append(link['media_url_https'])
+        mtype = media_type(link)
+        if mtype == 'photo':
+            linkList.append(link['media_url_https'])
+        elif mtype == 'animated_gif' or mtype == 'video':
+            linkList.append(link['video_info']['variants'][0]['url'])
     return linkList
 
 def make_status(stat, stat2):
