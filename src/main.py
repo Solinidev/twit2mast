@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import traceback, logging
 import config
 try:
     import tweepy
@@ -175,10 +176,14 @@ class streamListener(tweepy.StreamListener):
                 return True
         except:
             toot('exception occured', header, instance)
+            with open(par + 'error.txt', 'a') as log:
+                log.write(traceback.format_exc())
     # def on_error(self, status_code):
     #     print(status_code)
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.ERROR)
+
     path = os.path.dirname(os.path.abspath(__file__))
     par = os.path.join(path, os.pardir)
 
