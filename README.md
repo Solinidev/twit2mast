@@ -9,5 +9,5 @@
 - tweepy 없이 할 수 있지않을까
 - 툿 발송 개선
 - on_error method
-- extended text 뭐어쩌구
+- ~~extended text 뭐어쩌구~~
 - findLink() 개선
