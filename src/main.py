@@ -49,9 +49,29 @@ def replyCheck(status, userid):
     else:
         return True
 
+def truncCheck(status, onrt):
+    if onrt is True:
+        if status['retweeted_status']['truncated'] is True:
+            return True
+        else:
+            return False
+    else:
+        if status['truncated'] is True:
+            return True
+        else:
+            return False
+
+def get_full(status, onrt):
+    if onrt is True:
+        return status['retweeted_status']['extended_tweet']['full_text']
+    else:
+        return status['extended_tweet']['full_text']
+
 def findColon(status):
-    index = status.text.find(':')
-    return index
+    return status.text.find(':')
+
+def findColon_str(string):
+    return string.find(':')
 
 def mediaCheck(status):
     if 'extended_entities' in status:
@@ -60,8 +80,7 @@ def mediaCheck(status):
         return False
 
 def media_type(media):
-    mtype = media['type']
-    return mtype
+    return media['type']
 
 def getLinks(status):
     media = status['extended_entities']['media']
@@ -87,25 +106,63 @@ def make_status(stat, stat2):
 
 def parse_and_toot(status, userid):
     stat = status._json
-    # print(stat)
     if stat['is_quote_status'] is True:
         if RTcheck(stat):
-            enter = findColon(status)
-            stat2 = status.text[:enter+1] + '\n' + status.text[enter+2:] + '\n--\n' +'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
-            make_status(stat, stat2)
+            if truncCheck(stat, True) is True:
+                if stat['quoted_status']['truncated'] is True:
+                    msg = get_full(stat, True)
+                    msg2 = 'RT @' + stat['retweeted_user']['user']['screen_name'] + ':\n' + msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['extended_tweet']['full_text']
+                    make_status(stat, msg2)
+                else:
+                    msg = get_full(stat, True)
+                    msg2 = 'RT @' + stat['retweeted_user']['user']['screen_name'] + ':\n' + msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
+                    make_status(stat, msg2)
+            else:
+                if stat['quoted_status']['truncated'] is True:
+                    enter = findColon(status)
+                    msg = status.text[:enter+1] + '\n' + status.text[enter+2:] + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['extended_tweet']['full_text']
+                    make_status(stat, msg)
+                else:
+                    enter = findColon(status)
+                    stat2 = status.text[:enter+1] + '\n' + status.text[enter+2:] + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
+                    make_status(stat, stat2)
         else:
-            stat2 = status.text + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
-            make_status(stat, stat2)
+            if truncCheck(stat, False) is True:
+                if stat['quoted_status']['truncated'] is True:
+                    msg = get_full(stat, False)
+                    msg2 = msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['extended_tweet']['full_text']
+                    make_status(stat, msg2)
+                else:
+                    msg = get_full(stat, False)
+                    msg2 = msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
+                    make_status(stat, msg2)
+            else:
+                if stat['quoted_status']['truncated'] is True:
+                    msg = status.text + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['extended_tweet']['full_text']
+                    make_status(stat, msg)
+                else:
+                    stat2 = status.text + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
+                    make_status(stat, stat2)
     elif replyCheck(stat, userid):
         return True
     else:
         if RTcheck(stat):
-            enter = findColon(status)
-            stat2 = status.text[0:enter+1] + '\n' + status.text[enter+2:]
-            make_status(stat, stat2)
+            if truncCheck(stat, True) is True:
+                msg = get_full(stat, True)
+                enter = findColon_str(msg)
+                msg2 = msg[:enter+1] + '\n' + msg[enter+2:]
+                make_status(stat, msg2)
+            else:
+                enter = findColon(status)
+                stat2 = status.text[0:enter+1] + '\n' + status.text[enter+2:]
+                make_status(stat, stat2)
         else:
-            stat2 = status.text
-            make_status(stat, stat2)
+            if truncCheck(stat, False) is True:
+                msg = get_full(stat, False)
+                make_status(stat, msg)
+            else:
+                msg = stat['text']
+                make_status(stat, msg)
 
 class streamListener(tweepy.StreamListener):
     def on_status(self, status):
