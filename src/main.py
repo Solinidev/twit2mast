@@ -176,7 +176,7 @@ class streamListener(tweepy.StreamListener):
                 return True
         except:
             toot('exception occured', header, instance)
-            with open(par + 'error.txt', 'a') as log:
+            with open(os.path.join(par, 'error.txt'), 'a') as log:
                 log.write(traceback.format_exc())
     # def on_error(self, status_code):
     #     print(status_code)
@@ -189,7 +189,7 @@ if __name__ == '__main__':
 
     config.check_and_make(par)
 
-    with open(par + '/config.json', 'r') as f:
+    with open(os.path.join(par, 'config.json'), 'r') as f:
         data = json.load(f)
 
         consumer_key = data["twitter"]["api_keys"]["consumer_key"]

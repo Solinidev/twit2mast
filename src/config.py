@@ -3,7 +3,7 @@ import json
 from collections import OrderedDict
 
 def check_and_make(path):
-    if os.path.isfile(path + "/config.json"):
+    if os.path.isfile(os.path.join(path, "config.json")):
         return
     else:
         consumer_key = input("Enter your Twitter API key(consumer key) : ").strip()
@@ -34,7 +34,7 @@ def check_and_make(path):
             "access_token" : mastodon_access
         }
 
-        with open(path + '/config.json', 'w', encoding="utf-8") as make_file:
+        with open(os.path.join(path, 'config.json'), 'w', encoding="utf-8") as make_file:
             json.dump(data, make_file, ensure_ascii=False, indent="\t")
 
         return
