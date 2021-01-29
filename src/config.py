@@ -37,6 +37,7 @@ def check_and_make(path):
         with open(os.path.join(path, 'config.json'), 'w', encoding="utf-8") as make_file:
             json.dump(data, make_file, ensure_ascii=False, indent="\t")
 
+        print('Configuration saved into ' + path + ' as config.json')
         return
 
 if __name__ == '__main__':

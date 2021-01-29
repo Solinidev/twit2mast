@@ -203,11 +203,17 @@ if __name__ == '__main__':
     header = setHeader(mastodon_access)
     instance = 'https://twingyeo.kr'
 
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_secret)
+    while True:
+        try:
+            auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+            auth.set_access_token(access_token, access_secret)
 
 
-    userStreamListener = streamListener()
-    userStream = tweepy.Stream(auth = auth, listener = userStreamListener)
+            userStreamListener = streamListener()
+            userStream = tweepy.Stream(auth = auth, listener = userStreamListener)
 
-    userStream.filter(follow=[user_id])
+            print('Stream connected')
+            userStream.filter(follow=[user_id])
+        except:
+            print('Stream reconnecting . . .')
+            continue
