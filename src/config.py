@@ -14,8 +14,8 @@ def check_and_make(path):
         # screen_name = input("Enter Twitter username that you want to mirror : ")
         user_id = input("Enter user ID that you want to mirror (NOT username) : ").strip()
 
+        mastodon_instance = input("Enter your mastodon instance address(e.g. https://twingyeo.kr) : ").strip()
         mastodon_access = input("Enter your mastodon access token : ").strip()
-
 
         data = OrderedDict()
 
@@ -31,7 +31,8 @@ def check_and_make(path):
         }
 
         data["mastodon"] = {
-            "access_token" : mastodon_access
+            "access_token" : mastodon_access,
+            "instance" : mastodon_instance
         }
 
         with open(os.path.join(path, 'config.json'), 'w', encoding="utf-8") as make_file:

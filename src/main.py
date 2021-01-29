@@ -199,9 +199,9 @@ if __name__ == '__main__':
         user_id = data["twitter"]["id"]
 
         mastodon_access = data["mastodon"]["access_token"]
+        instance = data["mastodon"]["instance"]
 
     header = setHeader(mastodon_access)
-    instance = 'https://twingyeo.kr'
 
     while True:
         try:
