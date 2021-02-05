@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import time
 import traceback, logging
 import config
 try:
@@ -11,6 +12,10 @@ try:
     import requests
 except:
     sys.exit("requests is not installed.")
+
+def save_tweet(path, status):
+    with open(os.path.join(par, 'sent_tweet.txt'), 'a') as sent_log:
+        sent_log.write(time.strftime('%c', time.localtime(time.time())) + '\n' + str(status) + '\n\n')
 
 def setHeader(token):
     header = {'Authorization' : 'Bearer ' + token}
@@ -164,6 +169,7 @@ def parse_and_toot(status, userid):
             else:
                 msg = stat['text']
                 make_status(stat, msg)
+    save_tweet(par, stat)
 
 class streamListener(tweepy.StreamListener):
     def on_status(self, status):
