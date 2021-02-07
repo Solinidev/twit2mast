@@ -76,15 +76,20 @@ def findColon_str(string):
 
 def mediaCheck(status):
     if 'extended_entities' in status:
-        return True
+        return 1
+    elif status['quoted_status']['extended_tweet']['extended_entities']:
+        return 2
     else:
         return False
 
 def media_type(media):
     return media['type']
 
-def getLinks(status):
-    media = status['extended_entities']['media']
+def getLinks(status, onquote):
+    if onquote == 1:
+        media = status['extended_entities']['media']
+    elif onquote == 2:
+        media = status['quoted_status']['extended_tweet']['extended_entities']['media']
     linkList = []
     for link in media:
         mtype = media_type(link)
@@ -95,8 +100,9 @@ def getLinks(status):
     return linkList
 
 def make_status(stat, stat2):
-    if mediaCheck(stat):
-        links = getLinks(stat)
+    midi = mediaCheck(stat)
+    if midi:
+        links = getLinks(stat, midi)
         mediaIds = []
         for link in links:
             mediaId = upload_media(link, header, instance)
