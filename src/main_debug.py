@@ -80,11 +80,14 @@ def findColon_str(string):
     return string.find(':')
 
 def mediaCheck(status):
-    if 'extended_entities' in status:
-        return 1
-    elif status['quoted_status']['extended_tweet']['extended_entities']:
-        return 2
-    else:
+    try:
+        if 'extended_entities' in status:
+            return 1
+        elif status['quoted_status']['extended_tweet']['extended_entities']:
+            return 2
+        else:
+            return False
+    except KeyError:
         return False
 
 def media_type(media):
