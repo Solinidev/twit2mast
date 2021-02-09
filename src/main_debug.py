@@ -80,24 +80,35 @@ def findColon_str(string):
     return string.find(':')
 
 def mediaCheck(status):
+    # 진짜 개오바임 방법 찾아서 꼭 수정하기
+    if 'extended_entities' in status:
+        return 1
     try:
-        if 'extended_entities' in status:
-            return 1
-        elif status['quoted_status']['extended_tweet']['extended_entities']:
+        if status['extended_tweet']['extended_entities']:
             return 2
-        else:
-            return False
     except KeyError:
-        return False
+        try:
+            if status['quoted_status']['extended_tweet']['extended_entities']:
+                return 3
+        except KeyError:
+            try:
+                if status['retweeted_status']['extended_tweet']['extended_entities']:
+                    return 4
+            except:
+                return False
 
 def media_type(media):
     return media['type']
 
-def getLinks(status, onquote):
-    if onquote == 1:
+def getLinks(status, switch):
+    if switch == 1:
         media = status['extended_entities']['media']
-    elif onquote == 2:
+    elif switch == 2:
+        media = status['extended_tweet']['extended_entities']['media']
+    elif switch == 3:
         media = status['quoted_status']['extended_tweet']['extended_entities']['media']
+    elif switch == 4:
+        media = status['retweeted_status']['extended_tweet']['extended_entities']['media']
     linkList = []
     for link in media:
         mtype = media_type(link)
