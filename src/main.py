@@ -121,11 +121,11 @@ def parse_and_toot(status, userid):
             if truncCheck(stat, True) is True:
                 if stat['quoted_status']['truncated'] is True:
                     msg = get_full(stat, True)
-                    msg2 = 'RT @' + stat['retweeted_user']['user']['screen_name'] + ':\n' + msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['extended_tweet']['full_text']
+                    msg2 = 'RT @' + stat['retweeted_status']['user']['screen_name'] + ':\n' + msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['extended_tweet']['full_text']
                     make_status(stat, msg2)
                 else:
                     msg = get_full(stat, True)
-                    msg2 = 'RT @' + stat['retweeted_user']['user']['screen_name'] + ':\n' + msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
+                    msg2 = 'RT @' + stat['retweeted_status']['user']['screen_name'] + ':\n' + msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
                     make_status(stat, msg2)
             else:
                 if stat['quoted_status']['truncated'] is True:
@@ -160,7 +160,7 @@ def parse_and_toot(status, userid):
             if truncCheck(stat, True) is True:
                 msg = get_full(stat, True)
                 enter = findColon_str(msg)
-                msg2 = 'RT @' + stat['retweeted_user']['user']['screen_name'] + ':\n' + msg[:enter+1] + '\n' + msg[enter+2:]
+                msg2 = 'RT @' + stat['retweeted_status']['user']['screen_name'] + ':\n' + msg[:enter+1] + '\n' + msg[enter+2:]
                 make_status(stat, msg2)
             else:
                 enter = findColon(status)
