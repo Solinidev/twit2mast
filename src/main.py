@@ -20,7 +20,10 @@ def upload_media(link, header, instance):
     media = requests.get(link).content
     files = {'file' : media}
     r = requests.post(instance + '/api/v1/media', headers = header, files = files)
-    return r.json()['id']
+    if r.status_code == 200:
+        return r.json()['id']
+    else:
+        return False
 
 def toot(status, header, instance):
     t_data = dict()
@@ -120,7 +123,8 @@ def make_status(stat, stat2):
         mediaIds = []
         for link in links:
             mediaId = upload_media(link, header, instance)
-            mediaIds.append(mediaId)
+            if mediaId:
+                mediaIds.append(mediaId)
         toot_with_media(stat2, header, instance, mediaIds)
     else:
         toot(stat2, header, instance)
