@@ -98,6 +98,11 @@ def mediaCheck(status):
 def media_type(media):
     return media['type']
 
+def vidType_parse(media):
+    for i in range(0, len(media), 1):
+        if media['video_info']['variants'][i]['content_type'] == 'video/mp4':
+            return media['video_info']['variants'][i]['url']
+
 def getLinks(status, switch):
     if switch == 1:
         media = status['extended_entities']['media']
@@ -112,8 +117,10 @@ def getLinks(status, switch):
         mtype = media_type(link)
         if mtype == 'photo':
             linkList.append(link['media_url_https'])
-        elif mtype == 'animated_gif' or mtype == 'video':
+        elif mtype == 'animated_gif':
             linkList.append(link['video_info']['variants'][0]['url'])
+        elif mtype == 'video':
+            linkList.append(vidType_parse(link))
     return linkList
 
 def make_status(stat, stat2):
@@ -174,8 +181,7 @@ def parse_and_toot(status, userid):
         if RTcheck(stat):
             if truncCheck(stat, True) is True:
                 msg = get_full(stat, True)
-                enter = findColon_str(msg)
-                msg2 = 'RT @' + stat['retweeted_status']['user']['screen_name'] + ':\n' + msg[:enter+1] + '\n' + msg[enter+2:]
+                msg2 = 'RT @' + stat['retweeted_status']['user']['screen_name'] + ':\n' + msg
                 make_status(stat, msg2)
             else:
                 enter = findColon(status)
