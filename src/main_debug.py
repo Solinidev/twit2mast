@@ -132,7 +132,6 @@ def getLinks(status, switch):
     return linkList
 
 def make_status(stat, stat2):
-    # print(stat)
     midi = mediaCheck(stat)
     if midi:
         links = getLinks(stat, midi)
@@ -147,6 +146,7 @@ def make_status(stat, stat2):
 
 def parse_and_toot(status, userid):
     stat = status._json
+    print(stat)
     if stat['is_quote_status'] is True:
         if RTcheck(stat):
             if truncCheck(stat, True) is True:
@@ -193,8 +193,7 @@ def parse_and_toot(status, userid):
                 msg2 = 'RT @' + stat['retweeted_status']['user']['screen_name'] + ':\n' + msg
                 make_status(stat, msg2)
             else:
-                enter = findColon(status)
-                stat2 = status.text[0:enter+1] + '\n' + status.text[enter+2:]
+                stat2 = 'RT @' + stat['retweeted_status']['user']['screen_name'] + ':\n' + stat['retweeted_status']['text']
                 make_status(stat, stat2)
         else:
             if truncCheck(stat, False) is True:
