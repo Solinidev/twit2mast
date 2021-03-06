@@ -2,6 +2,12 @@ import os
 import json
 from collections import OrderedDict
 
+def url_check(url):
+    if url[-1] == '/':
+        return url[:len(url) - 1]
+    else:
+        return url
+
 def check_and_make(path):
     if os.path.isfile(os.path.join(path, "config.json")):
         return
@@ -14,7 +20,7 @@ def check_and_make(path):
         # screen_name = input("Enter Twitter username that you want to mirror : ")
         user_id = input("Enter user ID that you want to mirror (NOT username) : ").strip()
 
-        mastodon_instance = input("Enter your mastodon instance address(e.g. https://twingyeo.kr) : ").strip()
+        mastodon_instance = url_check(input("Enter your mastodon instance address(e.g. https://twingyeo.kr) : ").strip())
         mastodon_access = input("Enter your mastodon access token : ").strip()
 
         data = OrderedDict()
