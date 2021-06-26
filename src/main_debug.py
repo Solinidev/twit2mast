@@ -152,11 +152,11 @@ def parse_and_toot(status, userid):
             if truncCheck(stat, True) is True:
                 if stat['quoted_status']['truncated'] is True:
                     msg = get_full(stat, True)
-                    msg2 = 'RT @' + stat['retweeted_user']['user']['screen_name'] + ':\n' + msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['extended_tweet']['full_text']
+                    msg2 = 'RT @' + stat['retweeted_status']['user']['screen_name'] + ':\n' + msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['extended_tweet']['full_text']
                     make_status(stat, msg2)
                 else:
                     msg = get_full(stat, True)
-                    msg2 = 'RT @' + stat['retweeted_user']['user']['screen_name'] + ':\n' + msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
+                    msg2 = 'RT @' + stat['retweeted_status']['user']['screen_name'] + ':\n' + msg + '\n--\n' + 'QUOTE @' + stat['quoted_status']['user']['screen_name'] + ':\n' + stat['quoted_status']['text']
                     make_status(stat, msg2)
             else:
                 if stat['quoted_status']['truncated'] is True:
@@ -213,6 +213,8 @@ class streamListener(tweepy.StreamListener):
                 parse_and_toot(status, userID)
             else:
                 return True
+        except UnicodeEncodeError:
+            return True
         except:
             toot('exception occured', header, instance)
             with open(os.path.join(par, 'error.txt'), 'a') as log:
