@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import json
 import time
@@ -131,6 +132,11 @@ def getLinks(status, switch):
             linkList.append(vidType_parse(link))
     return linkList
 
+def sub_amp(text):
+    if "&amp;" in text:
+        return re.sub('&amp;', '&', text)
+    return text
+
 def make_status(stat, stat2):
     midi = mediaCheck(stat)
     if midi:
@@ -140,9 +146,9 @@ def make_status(stat, stat2):
             mediaId = upload_media(link, header, instance)
             if mediaId:
                 mediaIds.append(mediaId)
-        toot_with_media(stat2, header, instance, mediaIds)
+        toot_with_media(sub_amp(stat2), header, instance, mediaIds)
     else:
-        toot(stat2, header, instance)
+        toot(sub_amp(stat2), header, instance)
 
 def parse_and_toot(status, userid):
     stat = status._json
